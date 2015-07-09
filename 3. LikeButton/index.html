@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>	
+	<title>Like Button</title>
+	<style type="text/css">
+		*{
+			font-family: 'Noto Sans CJK JP Thin';
+		}
+		#like{
+			position: relative;
+		}
+		#like:after{
+		    content: "";
+  			position: absolute;
+			top: 16px;
+			left: -23px;
+			bottom: auto;
+			border-width: 10px 24px 8px 0;
+			border-color: transparent #f3961c;
+		}
+	</style>
+</head>
+<body>
+	<div><p>今天是個爛天氣唷, <a href="#" onclick="like()">Like</a> <span id="like">1</span></p></div>
+	<script type="text/javascript">
+		function httpGet(theUrl) { //ajax requset
+		    var xmlHttp = null;
+
+		    xmlHttp = new XMLHttpRequest();
+		    xmlHttp.open("GET", theUrl, false);
+		    xmlHttp.send(null);
+		    return xmlHttp.responseText;
+		}
+		function readLike(){
+			document.getElementById("like").innerHTML = httpGet("/LikeRead");	
+		}
+		function like(){
+			httpGet("/Like");
+			readLike();
+		}
+		
+		setInterval(function(){
+			readLike();
+		},2000);
+
+		readLike();
+	</script>
+</body>
+</html>

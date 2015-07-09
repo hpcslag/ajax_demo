@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Infinite Scroll</title>
+	<style type="text/css">
+	.box{
+	  width: 150px;
+	  height: 250px;
+	  background-color: green;
+	}
+	</style>
+</head>
+<body onscroll="checkHeight()">
+
+<div id="container">
+	<div class="box">
+		我是訊息
+	</div>
+	<div class="box">
+		我是訊息
+	</div>
+	<div class="box">
+		我是訊息
+	</div>
+	<div class="box">
+		我是訊息
+	</div>
+	<div class="box">
+		我是訊息
+	</div>
+</div>
+<script type="text/javascript">
+	//check scroll height
+
+	function checkHeight(){
+		var nowHeight =  document.body.scrollTop; //目前捲動高度
+		var totalHeight = document.body.offsetHeight; //總高度
+		var windowHeight = window.innerHeight; //螢幕高度 (兩個螢幕高度就要載入了)
+		
+		var i = 0;
+		if((nowHeight + windowHeight) > totalHeight){
+			var html = create("<div class='box'>我是訊息 "+i+"</div>");
+			document.getElementById("container").insertBefore(html,document.getElementById("container").lastChild);
+			i++;
+		}
+		/*
+		console.log("目前捲動高度: "+nowHeight);
+		console.log("總高度: " + totalHeight);
+		console.log("螢幕高度: "+windowHeight);*/
+	}
+
+	function create(htmlStr) { //create HTML element of string
+	    var frag = document.createDocumentFragment(),
+	        temp = document.createElement('div');
+	    temp.innerHTML = htmlStr;
+	    while (temp.firstChild) {
+	        frag.appendChild(temp.firstChild);
+	    }
+	    return frag;
+	}
+</script>
+</body>
+</html>

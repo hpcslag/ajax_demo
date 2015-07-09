@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+Username: <input type="text" id="usr">, Message:<input type="text" id="msg" onkeypress="enter(event)"> <input type="button" onclick="doSend()" value="submit">
+<div id="message"></div>
+</body>
+<script type="text/javascript">
+	function enter(e){
+		if(e.keyCode == 13){
+			doSend();
+		}
+	}
+	function doSend(){
+		var username = document.getElementById("usr").value,
+			message = document.getElementById("msg").value;
+
+		httpGet('/sendMsg/'+username+'/message/'+message);
+		document.getElementById("msg").value = null;
+		document.getElementById("msg").focus();
+	}
+	function httpGet(theUrl) { //ajax requset
+	    var xmlHttp = null;
+
+	    xmlHttp = new XMLHttpRequest();
+	    xmlHttp.open("GET", theUrl, false);
+	    xmlHttp.send(null);
+	    return xmlHttp.responseText;
+	}
+	
+	function create(htmlStr) { //create HTML element of string
+	    var frag = document.createDocumentFragment(),
+	        temp = document.createElement('div');
+	    temp.innerHTML = htmlStr;
+	    while (temp.firstChild) {
+	        frag.appendChild(temp.firstChild);
+	    }
+	    return frag;
+	}
+
+	var i = 0;
+	setInterval(function(){
+		var c = JSON.parse(httpGet('/chatRead/'+i));
+
+		if(c != null){
+			var newEle = create("<p>"+c.username+": "+c.content+"</p>");
+			var msg = document.getElementById("message");
+			msg.insertBefore(newEle,msg.firstChild);
+			i++;
+		}
+	},500);
+</script>
+</html>

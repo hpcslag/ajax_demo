@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+ 
+<html>
+<head>
+    <title>HTML 5 hisotry Demo</title>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.3.js">  </script>
+    <script>
+        $(function () {
+            if (typeof(history.pushState) == "undefined") {
+                $("body").html(
+                    "<div>您的瀏覽器不支援HTML5 history新功能，" +
+                    "請前往<a href='Html5History2.htm'>相容版</a></div>");
+            }
+            function writeLog(m) {
+                $("#ulLog").append("<li>" + m + "</li>");
+            }
+            $(window).bind("popstate", function () {
+                writeLog("popstate event!");
+            });
+            $(":button").click(function () {
+                var st = $("#txtState").val();
+                var url = $("#txtUrl").val();
+                switch (this.id) {
+                    case "btnPushState":
+                        history.pushState({ "v": st }, "", url);
+                        break;
+                    case "btnReplaceState":
+                        history.replaceState({ "v": st }, "", url);
+                        break;
+                    case "btnGetState":
+                        writeLog(JSON.stringify(history.state));
+                        break;
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+<table>
+    <tr><td>State</td><td><input id="txtState" /></td></tr>
+    <tr><td>Url</td><td><input id="txtUrl" /></td></tr>
+    <tr><td>&nbsp;</td>
+    <td>
+        <input type="button" id="btnPushState" value="Push State" />
+        <input type="button" id="btnReplaceState" value="Replace State" />
+        <input type="button" id="btnGetState" value="Get State" />
+    </td>
+    </tr>
+</table>
+<ul id="ulLog"></ul>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Notification</title>
+	<style type="text/css">
+		*{
+			font-family: 'Noto Sans CJK JP Thin';
+		}
+        #Notification{
+            height: 90%;
+            position:fixed;
+            top: 5%;
+            left: 2%;
+            z-index: 100;
+        }
+        .Notification:last-Child {
+          /*background: yellow;*/
+        }
+        .Notification:hover{
+            background:whitesmoke;
+            transition-duration: 0.3s;
+        }
+        .Notification{
+            width: 250px;
+            height: 80px;
+            background:white;
+            padding: 18px 18px;
+            position:relative;
+            box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.22);
+            margin-top: 15px;
+        }
+        body{
+            z-index:-1; /*避免覆蓋掉通知欄位的設定*/    
+        }
+        #information{
+            width:50px;
+            height:60px;
+        }
+    </style>
+</head>
+<body>
+<div id="Notification"></div>
+<script type="text/javascript">
+	var refresh = 3000;
+	function httpGet(theUrl) { //ajax requset
+	    var xmlHttp = null;
+
+	    xmlHttp = new XMLHttpRequest();
+	    xmlHttp.open("GET", theUrl, false);
+	    xmlHttp.send(null);
+	    return xmlHttp.responseText;
+	}
+
+	////////////////////////////////////////// Notification
+	function notificationApp(){ //Main APP
+	    var nArr = eval(httpGet('/Notification'));
+	    if(nArr.length != 0){
+	    	console.log(nArr[0]);
+	        notificationMessageDiv(nArr);
+	        call();
+	    }else{
+	        call();
+	    }
+	}
+	function call(){
+	    setTimeout(function(){notificationApp()},refresh);//set time to call notificationApp()
+	}
+	function create(htmlStr) { //create HTML element of string
+	    var frag = document.createDocumentFragment(),
+	        temp = document.createElement('div');
+	    temp.innerHTML = htmlStr;
+	    while (temp.firstChild) {
+	        frag.appendChild(temp.firstChild);
+	    }
+	    return frag;
+	}
+	var ctl = 0;
+	function notificationMessageDiv(messageArr){ //alert new message for new notification message (loop)
+	    var e = document.getElementById("Notification");
+	    for(var i = 0;i<messageArr.length;i++){
+	        var newElementMessage = create("<div style='cursor:pointer' name='"+ctl.toString()+"' class='Notification'><a class='head' href='"+messageArr[i].link+"'>"+messageArr[i].title+"</a><br><p class='content'>"+messageArr[i].content+"</p></div>");
+	        e.insertBefore(newElementMessage,e.firstChild);
+	        var theNewElement = document.getElementsByName(ctl.toString())[0];
+	        fadeIn(theNewElement);
+	        toDo(ctl);
+	        ctl++;
+	    }
+	    e.style.display = "block";
+	}
+
+	function toDo(number){
+	    var e = document.getElementsByName(number)[0];
+	    var timer = setTimeout(function(){
+	        fadeOut(e);
+	        setTimeout(function(){removeElement(number)},2500);
+	    },5000);
+	    
+	    e.addEventListener("mouseover", function(){
+	        clearTimeout(timer);
+	    }, false);
+	    
+	    e.addEventListener("mouseout", function(){
+	        timer = setTimeout(function(){
+	            fadeOut(e);
+	            setTimeout(function(){removeElement(number)},2500);
+	        },5000);
+	    }, false);
+	}
+
+	//anime
+	// fade out
+	function fadeOut(el){
+	  el.style.opacity = 1;
+
+	  (function fade() {
+	    if ((el.style.opacity -= .03) < 0) {
+	      el.style.display = "none";
+	    } else {
+	      requestAnimationFrame(fade);
+	    }
+	  })();
+	}
+
+	// fade in
+	function fadeIn(el, display){
+	  el.style.opacity = 0;
+	  el.style.display = display || "block";
+
+	  (function fade() {
+	    var val = parseFloat(el.style.opacity);
+	    if (!((val += .03) > 1)) {
+	      el.style.opacity = val;
+	      requestAnimationFrame(fade);
+	    }
+	  })();
+	}
+	function removeElement(divNum) {
+	  var d = document.getElementById('Notification');
+	  var olddiv = document.getElementsByName(divNum)[0];
+	  d.removeChild(olddiv);
+	}
+	function removeElementForMouse(e) {
+	  var d = document.getElementById(e);
+	  var olddiv = document.getElementById("information");
+	  d.removeChild(olddiv);
+	}
+
+	notificationApp();
+</script>
+</body>
+</html>
