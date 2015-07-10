@@ -57,6 +57,13 @@ app.get('/overload/:skip',function(req,res){
 	res.send(arr.slice(skip,skip+scope));
 });
 
+var save = '';
+app.get('/save/:text',function(req,res){
+	var text = req.param('text');
+	save = text;
+	res.send(null);
+});
+
 
 if(!!process.env.IP == false){
 	process.env.IP = "192.168.2.162";
